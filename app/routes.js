@@ -15,8 +15,6 @@ module.exports = function (app) {
     var apiRoutes = express.Router(),
         authRoutes = express.Router(),
         leaveRoutes = express.Router();
-    imageRoutes = express.Router();
-
     // Auth Routes
 
     apiRoutes.use('/auth', authRoutes);
@@ -37,14 +35,6 @@ module.exports = function (app) {
     leaveRoutes.get('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
     leaveRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.createLeave);
     leaveRoutes.delete('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
-
-    //Image Routes
-    // apiRoutes.use('/images', imageRoutes);
-    // imageRoutes.get('/', requireAuth,ImageController.getImages);
-    // imageRoutes.get('/:image_id', requireAuth,ImageController.getImageById);
-    // imageRoutes.post('/', requireAuth, ImageController.createImage);
-    // //imageRoutes.post('/:image_id', requireAuth,  AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']),ImageController.updateImage);
-    // imageRoutes.delete('/:image_id', requireAuth, ImageController.deleteImage);
 
 
     //set up routes
