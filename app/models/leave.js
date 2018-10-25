@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var UserSchema = require('./user');
 var LeaveSchema = new mongoose.Schema({
 
-    
+
 
     reason: {
         type: String,
@@ -26,8 +26,8 @@ var LeaveSchema = new mongoose.Schema({
     },
 
     email: {
-       type: mongoose.Schema.Types.String,
-     }
+        type: mongoose.Schema.Types.String,
+    }
 
 });
 
