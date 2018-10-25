@@ -25,10 +25,11 @@ var LeaveSchema = new mongoose.Schema({
         required: true
     },
 
-    user: {
-        ref: 'User',
-        type: String
-    }
+    email: {
+       type: mongoose.Schema.Types.String,
+     }
 
 });
+
+
 module.exports = mongoose.model('Leave', LeaveSchema);

@@ -29,7 +29,7 @@ module.exports = function(app) {
         leaveRoutes.get('/', requireAuth, AuthenticationController.roleAuthorization(['manager' , 'admin']), LeaveController.getLeaves);
         leaveRoutes.get('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
         leaveRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.createLeave);
-        leaveRoutes.delete('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
+        leaveRoutes.delete('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
 
         //set up routes
         app.use('/api', apiRoutes);
