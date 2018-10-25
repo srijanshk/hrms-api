@@ -4,7 +4,7 @@ exports.getLeaves = function(req,res,next){
     Leave.find(function(err, leaves) {
 
         if (err){
-            res.sed(err);
+            res.send(err);
         }
         res.json(leaves);
     });
