@@ -16,9 +16,14 @@ module.exports = function (app) {
     var apiRoutes = express.Router(),
         authRoutes = express.Router(),
         leaveRoutes = express.Router();
+
     profileRoutes = express.Router();
 
     // Auth Routes
+
+
+    // Auth Routes
+
 
     apiRoutes.use('/auth', authRoutes);
 
@@ -46,6 +51,17 @@ module.exports = function (app) {
     profileRoutes.get('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee']), profileController.getProfile);
     profileRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), profileController.createProfile);
     profileRoutes.delete('/:profile_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), profileController.deleteProfile);
+
+
+
+    //Leave Routes
+
+    apiRoutes.use('/leaves', leaveRoutes);
+    leaveRoutes.get('/', requireAuth, AuthenticationController.roleAuthorization(['manager', 'admin']), LeaveController.getLeaves);
+    leaveRoutes.get('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
+    leaveRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.createLeave);
+    leaveRoutes.delete('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
+
 
     //set up routes
     app.use('/api', apiRoutes);

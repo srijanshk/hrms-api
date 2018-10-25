@@ -4,66 +4,70 @@ var config = require('./auth');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var LocalStrategy = require('passport-local').Strategy;
- 
+
 var localOptions = {
     usernameField: 'email'
 };
- 
-var localLogin = new LocalStrategy(localOptions, function(email, password, done){
- 
+
+var localLogin = new LocalStrategy(localOptions, function (email, password, done) {
+
     User.findOne({
         email: email
-    }, function(err, user){
- 
-        if(err){
+    }, function (err, user) {
+
+        if (err) {
             return done(err);
         }
- 
-        if(!user){
-            return done(null, false, {error: 'Login failed. Please try again.'});
+
+        if (!user) {
+            return done(null, false, {
+                error: 'Login failed. Please try again.'
+            });
         }
- 
-        user.comparePassword(password, function(err, isMatch){
- 
-            if(err){
+
+        user.comparePassword(password, function (err, isMatch) {
+
+            if (err) {
                 return done(err);
             }
- 
-            if(!isMatch){
-                return done(null, false, {error: 'Login failed. Please try again.'});
+
+            if (!isMatch) {
+                return done(null, false, {
+                    error: 'Login failed. Please try again.'
+                });
             }
- 
+
             return done(null, user);
- 
+
         });
- 
+
     });
- 
+
 });
- 
+
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
 opts.secretOrKey = config.secret;
- 
-var jwtLogin = new JwtStrategy(opts, function(payload, done){
- 
-    User.findById(payload._id, function(err, user){
- 
-        if(err){
+
+var jwtLogin = new JwtStrategy(opts, function (payload, done) {
+
+    User.findById(payload._id, function (err, user) {
+
+        if (err) {
             return done(err, false);
         }
- 
-        if(user){
+
+        if (user) {
             done(null, user);
         } else {
             done(null, false);
         }
- 
+
     });
- 
+
 });
- 
+
 passport.use(jwtLogin);
 passport.use(localLogin);
