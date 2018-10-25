@@ -3,6 +3,7 @@ var Leave = require('../models/leave');
 exports.getLeaves = function (req, res, next) {
     Leave.find(function (err, leaves) {
 
+
         if (err) {
             res.send(err);
         }
