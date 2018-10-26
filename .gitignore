@@ -2,6 +2,4 @@
 
 # Dependency directories
 node_modules
-jspm_packages
-typings
-
+package-lock.json
