@@ -4,6 +4,7 @@ var AuthenticationController = require('./controllers/authentication'),
     passportService = require('../config/passport'),
     passport = require('passport'),
     profileController = require('./controllers/profiles');
+    userController = require('./controllers/userinfo')
 
 var requireAuth = passport.authenticate('jwt', {
         session: false
@@ -18,6 +19,7 @@ module.exports = function (app) {
         leaveRoutes = express.Router();
 
     profileRoutes = express.Router();
+    userRoutes = express.Router();
 
     // Auth Routes
 
@@ -29,6 +31,9 @@ module.exports = function (app) {
 
     authRoutes.post('/register', AuthenticationController.register);
     authRoutes.post('/login', requireLogin, AuthenticationController.login);
+    authRoutes.post('/forgetpasswd', AuthenticationController.forgetpassword);
+    authRoutes.post('/resetpassword', AuthenticationController.resetpassword);
+    authRoutes.put('/updatepassword', requireAuth, AuthenticationController.updatepassword);
 
     authRoutes.get('/protected', requireAuth, function (req, res) {
         res.send({
@@ -36,13 +41,7 @@ module.exports = function (app) {
         });
     });
 
-    //Leave Routes
-
-    apiRoutes.use('/leaves', leaveRoutes);
-    leaveRoutes.get('/', requireAuth, AuthenticationController.roleAuthorization(['manager', 'admin']), LeaveController.getLeaves);
-    leaveRoutes.get('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
-    leaveRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.createLeave);
-    leaveRoutes.delete('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
+    
 
     //Profile Routes
 
@@ -58,9 +57,18 @@ module.exports = function (app) {
 
     apiRoutes.use('/leaves', leaveRoutes);
     leaveRoutes.get('/', requireAuth, AuthenticationController.roleAuthorization(['manager', 'admin']), LeaveController.getLeaves);
-    leaveRoutes.get('/:user', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
+    leaveRoutes.get('/:user_id', requireAuth, AuthenticationController.roleAuthorization(['employee']), LeaveController.getLeave);
     leaveRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.createLeave);
     leaveRoutes.delete('/:leave_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), LeaveController.deleteLeave);
+
+    //Userinfo Routes
+    apiRoutes.use('/userinfo', userRoutes);
+    userRoutes.get('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), userController.getUserinfos);
+    userRoutes.get('/:user_id', requireAuth, AuthenticationController.roleAuthorization(['employee']), userController.getUserinfo);
+    userRoutes.get('/get/:_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), userController.getUserinfobyid);
+    userRoutes.post('/', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), userController.CreateUserInfo);
+    userRoutes.delete('/:userinfo_id', requireAuth, AuthenticationController.roleAuthorization(['employee', 'manager', 'admin']), userController.deleteUserinfo);
+
 
 
     //set up routes

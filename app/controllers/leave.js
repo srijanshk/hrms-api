@@ -47,8 +47,8 @@ exports.deleteLeave = function (req, res, next) {
 }
 
 exports.getLeave = function (req, res, next) {
-    Leave.find({
-        user: req.params.user
+    Leave.findById({
+        _id: req.params.user_id
     }, function (err, leave) {
         if (err) {
             res.send(err);

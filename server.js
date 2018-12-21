@@ -8,7 +8,7 @@ var cors = require('cors');
 var databaseConfig = require('./config/database');
 var router = require('./app/routes');
 
-mongoose.connect(databaseConfig.url);
+mongoose.connect(databaseConfig.url,{ useNewUrlParser: true });
 
 app.listen(process.env.PORT || 3000);
 console.log("App listening on port 3000");
