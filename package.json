@@ -4,8 +4,8 @@
   "description": "User management tool",
   "main": "server.js",
   "scripts": {
-    "start": "node ./server.js",
-    "dev": "nodemon ./server.js",
+    "start": "supervisor -- server.js -h localhost",
+    "dev": "supervisor -- server.js -h localhost",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
