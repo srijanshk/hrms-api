@@ -17,8 +17,8 @@ var UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['employee', 'manager', 'admin'],
-        default: 'employee'
+        enum: ['employee', 'manager', 'admin']
+        // default: 'employee'
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
@@ -26,6 +26,7 @@ var UserSchema = new mongoose.Schema({
     contactNo: Number,
     post: String,
     branch: Array,
+    lineManager: String,
     Project: {
         type: String,
         default: 'Bench'

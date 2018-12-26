@@ -3,10 +3,10 @@ var User = require('../models/user');
 var authConfig = require('../../config/auth');
 var generator = require('generate-password');
 var nodemailer = require('nodemailer');
-var sgMail = require('@sendgrid/mail');
 var bcrypt = require('bcrypt-nodejs');
 var async = require('async');
 var crypto = require('crypto');
+
 
 function generateToken(user) {
     return jwt.sign(user, authConfig.secret, {
@@ -49,6 +49,7 @@ exports.register = function (req, res, next) {
     var post = req.body.post;
     var branch = req.body.branch;
     var project = req.body.project;
+    var lineManager = req.body.lineManager;
 
     if (!email) {
         return res.status(422).send({
@@ -78,7 +79,8 @@ exports.register = function (req, res, next) {
             contactNo: contactNo,
             post: post,
             branch: branch,
-            project: project
+            project: project,
+            lineManager: lineManager
         });
         
         user.save(function (err, user, done) {
@@ -91,20 +93,36 @@ exports.register = function (req, res, next) {
 
             res.status(201).json({
                 message: 'Please Check you Email Address',
-                token: 'JWT ' + generateToken(userInfo),
-                user: userInfo
+                // token: 'JWT ' + generateToken(userInfo),
+                // user: userInfo
             });
-            sgMail.setApiKey('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');
-            var msg = {
-                from: 'hrms@sevadev.com', // sender address
-                to: user.email, // list of receivers
-                subject: 'Username and Password', // Subject line
+
+        nodemailer.createTestAccount((err, account) => {
+            let transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure : false,
+                auth: {
+                    user: 'apihrms@gmail.com',
+                    pass: 'P@sswo123'
+                }
+            });
+
+            let mailOptions = {
+                from: 'no-reply@sevadev.com',
+                to: user.email,
+                subject: 'Credentials for HRMS',
                 text: 'You are receiving this because your email have been registered to seva development HRMS.\n\n'+
-                            'Please use this email address and password for the login and Got to Profile to complete your Information.\n\n'+
-                            'email:' + user.email + '.\n\n'+
-                            'password:'+pass, // plain text body
+                                'Please use this email address and password for the login and Got to Profile to complete your Information.\n\n'+
+                                'email:' + user.email + '.\n\n'+
+                                'password:'+pass, // plain text body
             };
-            sgMail.send(msg);
+            transporter.sendMail(mailOptions, (error, info) => {
+                if(error) {
+                    return console.log(error);
+                }
+            });
+        });
         });
 
     });
@@ -166,22 +184,33 @@ exports.forgetpassword = function (req, res) {
               });
         },
         function(token, user, done) {
-            sgMail.setApiKey('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');
-            var data = {
-                from: 'hrms@sevadev.com', // sender address
-                to: user.email, // list of receivers
-                subject: 'Reset Password', // Subject line
-                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-                               'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                           'http://' + req.headers.host + '/api/auth/resetpassword?token=' + token + '\n\n' +
-                              'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-            };
-            sgMail.send(data, function(err) {
-                if (!err) {
-                    return res.json({ message: 'Kindly check your email for further instructions'});            
-                } else {
-                    return done(err); 
-                }
+            nodemailer.createTestAccount((err, account) => {
+                let transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure : false,
+                    auth: {
+                        user: 'apihrms@gmail.com',
+                        pass: 'P@sswo123'
+                    }
+                });
+    
+                let mailOptions = {
+                    from: 'no-reply@sevadev.com',
+                    to: user.email,
+                    subject: 'Reset Password Request',
+                    text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                                       'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                                   'http://' + req.headers.host + '/api/auth/resetpassword?token=' + token + '\n\n' +
+                                      'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if(error) {
+                        return console.log(error);
+                    } else {
+                        return res.json({ message: 'Kindly check your email for further instructions'});  
+                    }
+                });
             });
         }
     ], function(err) {
@@ -213,20 +242,31 @@ exports.resetpassword = function(req, res, next) {
                             message: err
                         });
                     } else {
-                        sgMail.setApiKey('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');
-                        var data = {
-                            from: 'hrms@sevadev.com', // sender address
-                            to: user.email, // list of receivers
-                            subject: 'Password Reset Confirmation', // Subject line
-                            text: 'Hello,\n\n' +
-                                    'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
-                        };
-                        sgMail.send(data, function(err) {
-                            if (!err) {
-                                return res.json({ message: 'Password reset'});
-                            } else {
-                                return res.json({message: err})
-                            }
+                        nodemailer.createTestAccount((err, account) => {
+                            let transporter = nodemailer.createTransport({
+                                host: 'smtp.gmail.com',
+                                port: 587,
+                                secure : false,
+                                auth: {
+                                    user: 'apihrms@gmail.com',
+                                    pass: 'P@sswo123'
+                                }
+                            });
+                
+                            let mailOptions = {
+                                from: 'no-reply@sevadev.com',
+                                to: user.email,
+                                subject: 'Password Reset Confirmation',
+                                text: 'Hello,\n\n' +
+                                'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+                            };
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if(error) {
+                                    return console.log(error);
+                                } else {
+                                    return res.json({ message: 'Password reset'});
+                                }
+                            });
                         });
                     }
                 });
